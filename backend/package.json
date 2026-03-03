@@ -1,0 +1,41 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.ts",
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "worker:email": "ts-node src/queues/email.worker.ts"
+  },
+  "node-pg-migrate": {
+    "dir": "migrations",
+    "migrationsTable": "pgmigrations",
+    "databaseUrl": "process.env.DATABASE_URL"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.0",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.2.0",
+    "@types/pg": "^8.16.0",
+    "node-pg-migrate": "^8.0.4",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1",
+    "pg": "^8.18.0",
+    "winston": "^3.19.0",
+    "zod": "^4.3.6",
+    "zod-to-json-schema": "^3.25.1"
+  }
+}
