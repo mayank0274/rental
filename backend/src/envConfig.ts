@@ -11,6 +11,8 @@ const envSchema = z.object({
     PG_USER: z.string(),
     PG_PASSWORD: z.string(),
     PG_DB_NAME: z.string(),
+    JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+    JWT_EXPIRES_IN: z.string().default("7d"),
 });
 
 const selectedEnv = {
@@ -21,6 +23,8 @@ const selectedEnv = {
     PG_USER: process.env.PG_USER,
     PG_PASSWORD: process.env.PG_PASSWORD,
     PG_DB_NAME: process.env.PG_DB_NAME,
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
 };
 
 const env = envSchema.safeParse(selectedEnv);
