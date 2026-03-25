@@ -2,6 +2,7 @@ export interface RentalItemRow {
     id: string;
     user_id: string;
     description: string;
+    slug: string;
     price_per_day: string;
     images: string[];
     category: string;

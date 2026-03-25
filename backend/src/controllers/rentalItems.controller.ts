@@ -21,6 +21,7 @@ export const createRentalItem = asyncErrorHandler(
 
         const {
             description,
+            slug,
             price_per_day,
             images,
             category,
@@ -32,12 +33,13 @@ export const createRentalItem = asyncErrorHandler(
 
         const { rows } = await pool.query<RentalItemRow>(
             `INSERT INTO rental_items
-        (user_id, description, price_per_day, images, category, status, location_city, location_state, location_country)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        (user_id, description, slug, price_per_day, images, category, status, location_city, location_state, location_country)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
             [
                 user.id,
                 description,
+                slug,
                 price_per_day,
                 images,
                 category,
@@ -83,6 +85,8 @@ export const updateRentalItem = asyncErrorHandler(
 
         if (data.description !== undefined)
             updates.push({ key: "description", value: data.description });
+        if (data.slug !== undefined)
+            updates.push({ key: "slug", value: data.slug });
         if (data.price_per_day !== undefined)
             updates.push({ key: "price_per_day", value: data.price_per_day });
         if (data.images !== undefined)
@@ -170,20 +174,72 @@ export const listPublicRentalItems = asyncErrorHandler(
         if (!parsed.success)
             throw ApiError.validationError(parsed.error.flatten().fieldErrors);
 
-        const { category } = parsed.data;
-        const values: Array<string> = [];
+        const { category, page, limit } = parsed.data;
+        const whereClauses: string[] = ["status = 'available'"];
+        const filterValues: Array<string> = [];
 
-        let query = "SELECT * FROM rental_items WHERE status = 'available'";
         if (category) {
-            values.push(category);
-            query += ` AND category = $${values.length}`;
+            filterValues.push(category);
+            whereClauses.push(`category = $${filterValues.length}`);
         }
-        query += " ORDER BY created_at DESC";
 
-        const { rows } = await pool.query<RentalItemRow>(query, values);
+        const baseQuery = `FROM rental_items WHERE ${whereClauses.join(" AND ")}`;
+        const shouldPaginate = page !== undefined || limit !== undefined;
 
-        return res
-            .status(200)
-            .json(new ApiSuccessRes(200, "Public rental items", rows));
+        if (shouldPaginate) {
+            const pageNumber = page ?? 1;
+            const pageSize = limit ?? 20;
+            const offset = (pageNumber - 1) * pageSize;
+
+            const itemsQuery = `SELECT * ${baseQuery} ORDER BY created_at DESC LIMIT $${
+                filterValues.length + 1
+            } OFFSET $${filterValues.length + 2}`;
+
+            const itemsValues = [...filterValues, pageSize, offset];
+
+            const [itemsResult, countResult] = await Promise.all([
+                pool.query<RentalItemRow>(itemsQuery, itemsValues),
+                pool.query<{ total: number }>(
+                    `SELECT COUNT(*)::int AS total ${baseQuery}`,
+                    filterValues
+                ),
+            ]);
+
+            const total = countResult.rows[0]?.total ?? 0;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+            return res.status(200).json(
+                new ApiSuccessRes(200, "Public rental items", {
+                    items: itemsResult.rows,
+                    pagination: {
+                        page: pageNumber,
+                        limit: pageSize,
+                        total,
+                        totalPages,
+                        hasNext: pageNumber < totalPages,
+                        hasPrev: pageNumber > 1,
+                    },
+                })
+            );
+        }
+
+        const { rows } = await pool.query<RentalItemRow>(
+            `SELECT * ${baseQuery} ORDER BY created_at DESC`,
+            filterValues
+        );
+
+        return res.status(200).json(
+            new ApiSuccessRes(200, "Public rental items", {
+                items: rows,
+                pagination: {
+                    page: 1,
+                    limit: rows.length,
+                    total: rows.length,
+                    totalPages: 1,
+                    hasNext: false,
+                    hasPrev: false,
+                },
+            })
+        );
     }
 );
