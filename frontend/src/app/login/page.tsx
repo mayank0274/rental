@@ -1,10 +1,21 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useLogin } from "@/hooks/useAuthMutations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
+  const { mutate: login, isPending } = useLogin();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    login(data);
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-6 py-12">
@@ -32,7 +43,7 @@ export default function LoginPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Use your email and password to continue.
             </p>
-            <form className="mt-6 space-y-4">
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="login-email">Email</Label>
                 <Input
@@ -55,8 +66,8 @@ export default function LoginPage() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Sign in
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "Logging in..." : "Sign in"}
               </Button>
             </form>
             <p className="mt-4 text-xs text-muted-foreground">
@@ -68,3 +79,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

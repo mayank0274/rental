@@ -1,10 +1,25 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { useRegister } from "@/hooks/useAuthMutations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
+  const { mutate: register, isPending } = useRegister();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Convert phone to string and ensure it's handled if empty
+    if (!data.phone) delete data.phone;
+    
+    register(data);
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center px-6 py-12">
@@ -32,7 +47,7 @@ export default function SignupPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Create your profile in a few quick steps.
             </p>
-            <form className="mt-6 space-y-4">
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="signup-name">Name</Label>
                 <Input
@@ -72,7 +87,7 @@ export default function SignupPage() {
                   placeholder="Create a strong password"
                   autoComplete="new-password"
                   minLength={8}
-                  pattern="^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$"
+                  pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}"
                   title="At least 8 characters, 1 uppercase letter, 1 number, and 1 special character."
                   required
                 />
@@ -89,14 +104,14 @@ export default function SignupPage() {
                   placeholder="10-digit phone number"
                   autoComplete="tel"
                   inputMode="numeric"
-                  pattern="^\\d{10}$"
+                  pattern="[0-9]{10}"
                 />
                 <p className="text-xs text-muted-foreground">
                   Exactly 10 digits.
                 </p>
               </div>
-              <Button type="submit" className="w-full">
-                Create account
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "Creating account..." : "Create account"}
               </Button>
             </form>
             <p className="mt-4 text-xs text-muted-foreground">
@@ -108,3 +123,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
