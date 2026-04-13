@@ -39,17 +39,17 @@ export function RentalDetailClient({
       <Section className="min-h-screen py-8 lg:py-12">
         <div className="flex flex-col gap-8">
           <div className="space-y-4">
-            <div className="h-10 w-2/3 rounded-full bg-muted animate-pulse" />
-            <div className="h-5 w-1/3 rounded-full bg-muted animate-pulse" />
+            <div className="h-10 w-2/3 rounded-lg bg-muted animate-pulse" />
+            <div className="h-5 w-1/3 rounded-lg bg-muted animate-pulse" />
           </div>
-          <div className="aspect-[4/3] lg:aspect-[21/9] w-full rounded-3xl bg-muted animate-pulse" />
+          <div className="aspect-[4/3] lg:aspect-[21/9] w-full rounded-lg bg-muted animate-pulse" />
           <div className="grid gap-12 lg:grid-cols-3 lg:gap-16">
             <div className="lg:col-span-2 space-y-4">
-              <div className="h-6 w-full rounded-full bg-muted animate-pulse" />
-              <div className="h-6 w-5/6 rounded-full bg-muted animate-pulse" />
-              <div className="h-6 w-4/6 rounded-full bg-muted animate-pulse" />
+              <div className="h-6 w-full rounded-lg bg-muted animate-pulse" />
+              <div className="h-6 w-5/6 rounded-lg bg-muted animate-pulse" />
+              <div className="h-6 w-4/6 rounded-lg bg-muted animate-pulse" />
             </div>
-            <div className="h-64 rounded-3xl bg-muted animate-pulse" />
+            <div className="h-64 rounded-lg bg-muted animate-pulse" />
           </div>
         </div>
       </Section>
@@ -119,28 +119,18 @@ export function RentalDetailClient({
         </div>
 
         {/* Main Content & Sidebar Grid */}
-        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[1fr_360px] lg:gap-16 pt-4">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_360px] lg:gap-12 pt-4">
 
           {/* Main Content Area */}
           <div className="flex w-full min-w-0 flex-col gap-10">
-            {/* Description (Moved above image) */}
+            {/* Interactive Image Gallery (Moved above description) */}
             <div className="flex flex-col gap-4">
-              <h2 className="text-2xl font-semibold tracking-tight">About this rental</h2>
-              <div className="prose prose-neutral max-w-none dark:prose-invert">
-                <p className="whitespace-pre-wrap leading-relaxed text-muted-foreground">
-                  {rental.description}
-                </p>
-              </div>
-            </div>
-
-            {/* Interactive Image Gallery (Moved below description) */}
-            <div className="flex flex-col gap-4">
-              <div className="relative aspect-[4/3] lg:aspect-[21/9] w-full overflow-hidden rounded-3xl bg-muted border border-border/50">
+              <div className="relative aspect-[4/3] lg:aspect-[21/9] w-full overflow-hidden rounded-lg bg-muted border border-border">
                 {rental.images?.[activeImage] ? (
                   <img
                     src={rental.images[activeImage]}
                     alt={rental.title || rental.description}
-                    className="h-full w-full object-cover transition-opacity duration-300"
+                    className="h-full w-full object-contain bg-muted/20 transition-opacity duration-300"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-muted/30">
@@ -148,7 +138,7 @@ export function RentalDetailClient({
                   </div>
                 )}
                 {rental.images && rental.images.length > 1 && (
-                  <div className="absolute bottom-4 right-4 rounded-full border border-white/20 bg-black/60 px-3 py-1 font-mono text-xs font-medium text-white backdrop-blur-md">
+                  <div className="absolute bottom-4 right-4 rounded border border-white/20 bg-black/60 px-3 py-1 font-mono text-xs font-medium text-white backdrop-blur-md">
                     {activeImage + 1} / {rental.images.length}
                   </div>
                 )}
@@ -161,7 +151,7 @@ export function RentalDetailClient({
                       key={`${image}-${index}`}
                       type="button"
                       onClick={() => setActiveImage(index)}
-                      className={`group relative h-20 w-32 shrink-0 overflow-hidden rounded-2xl border-2 transition-all ${activeImage === index ? "border-primary ring-2 ring-primary/20 ring-offset-1" : "border-transparent hover:border-border/80 opacity-70 hover:opacity-100"
+                      className={`group relative h-20 w-32 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${activeImage === index ? "border-primary ring-2 ring-primary/20 ring-offset-1" : "border-transparent hover:border-border/80 opacity-70 hover:opacity-100"
                         }`}
                     >
                       <img
@@ -178,14 +168,24 @@ export function RentalDetailClient({
               )}
             </div>
 
-            <hr className="border-border/60" />
+            {/* Description */}
+            <div className="flex flex-col gap-4 rounded-lg border bg-card p-6 shadow-sm">
+              <h2 className="text-xl font-bold tracking-tight text-foreground">About this rental</h2>
+              <div className="prose prose-neutral max-w-none dark:prose-invert">
+                <p className="whitespace-pre-wrap leading-relaxed text-muted-foreground text-sm">
+                  {rental.description}
+                </p>
+              </div>
+            </div>
+
+            <hr className="border-border" />
 
             {/* Publisher Section */}
             {(rental.publisher?.name || rental.publisher?.email || rental.publisher?.phone) && (
               <div className="flex flex-col gap-6">
                 <h2 className="text-2xl font-semibold tracking-tight">Meet the owner</h2>
                 <div className="flex items-start gap-5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded bg-primary/10 text-primary">
                     <User className="h-6 w-6" />
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -205,14 +205,11 @@ export function RentalDetailClient({
           </div>
 
           {/* Sticky Sidebar */}
-          <div className="sticky top-24 relative flex w-full flex-col gap-6 rounded-3xl border border-border/50 bg-background/50 p-6 backdrop-blur-xl shadow-lg ring-1 ring-border/20">
-            {/* Glossy glare effect */}
-            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white/10 to-transparent opacity-50 rounded-3xl" />
-
+          <div className="sticky top-24 relative flex w-full flex-col gap-6 rounded-lg border bg-card p-6 shadow-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl font-bold tracking-tight">{formatPrice(rental.price_per_day)}</span>
-                <span className="text-muted-foreground font-medium">/ day</span>
+                <span className="text-3xl font-bold text-primary">{formatPrice(rental.price_per_day)}</span>
+                <span className="text-muted-foreground font-medium uppercase text-xs">/ day</span>
               </div>
             </div>
 

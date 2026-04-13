@@ -16,18 +16,18 @@ export function Navbar({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur",
+        "sticky top-0 z-50 bg-card shadow-sm border-b border-border",
         className
       )}
     >
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 py-3">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-            RN
+          <span className="flex size-8 items-center justify-center rounded bg-primary text-primary-foreground font-bold text-sm">
+            RB
           </span>
-          <span className="text-base font-semibold tracking-tight">RentalBazar</span>
+          <span className="text-xl font-bold tracking-tight text-foreground">RentalBazar</span>
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
+        <nav className="flex items-center gap-4 sm:gap-6 text-sm">
           <div className="hidden items-center gap-6 md:flex border-r border-border/60 pr-6 mr-1">
             {navItems.map((item) => (
               <Link

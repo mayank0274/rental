@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { categories } from "@/components/home/categories";
 import { rentalsApi } from "@/lib/api/rentals-api";
 import { cn } from "@/lib/utils";
+import { MapPin } from "lucide-react";
 
 const PAGE_SIZE = 12;
 
@@ -150,58 +151,64 @@ export function RentalsClient({
                 ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
                     <div
                       key={`skeleton-${index}`}
-                      className="flex flex-col gap-4 rounded-3xl border border-border/60 bg-background p-5 shadow-sm"
+                      className="flex flex-col rounded-lg border bg-card shadow-sm"
                     >
-                      <div className="h-36 rounded-2xl bg-muted" />
-                      <div className="h-4 w-3/4 rounded-full bg-muted" />
-                      <div className="h-3 w-1/2 rounded-full bg-muted" />
-                      <div className="h-3 w-2/3 rounded-full bg-muted" />
+                      <div className="h-48 rounded-t-lg bg-muted" />
+                      <div className="p-4 flex flex-col gap-3">
+                        <div className="h-5 w-3/4 rounded bg-muted" />
+                        <div className="h-4 w-1/2 rounded bg-muted" />
+                        <div className="mt-2 h-6 w-1/3 rounded bg-muted" />
+                      </div>
                     </div>
                   ))
                 : items.map((item) => (
                     <Link
                       key={item.id}
                       href={`/rental/${item.slug}`}
-                      className="group flex h-full flex-col justify-between rounded-3xl border border-border/60 bg-background p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                      className="group flex flex-col rounded-lg border bg-card shadow-sm transition hover:shadow-md"
                     >
-                      <div className="flex flex-col gap-4">
-                        <div className="relative h-36 overflow-hidden rounded-2xl bg-muted">
-                          {item.images?.[0] ? (
-                            <img
-                              src={item.images[0]}
-                              alt={item.title || item.description}
-                              className="h-full w-full object-cover transition group-hover:scale-[1.02]"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="h-full w-full bg-gradient-to-br from-muted to-muted/30" />
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold">
-                            {item.title || item.description}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
+                      <div className="relative h-48 overflow-hidden rounded-t-lg bg-muted/30">
+                        {item.images?.[0] ? (
+                          <img
+                            src={item.images[0]}
+                            alt={item.title || item.description}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-muted/40">
+                            <span className="text-muted-foreground text-sm uppercase">No Image</span>
+                          </div>
+                        )}
+                        <span className="absolute top-2 right-2 rounded bg-background/90 px-2 py-1 text-xs font-semibold backdrop-blur text-foreground uppercase tracking-wider">
+                          {item.category}
+                        </span>
+                      </div>
+                      
+                      <div className="flex flex-col p-4">
+                        <h3 className="line-clamp-1 text-lg font-semibold text-foreground">
+                          {item.title || item.description}
+                        </h3>
+                        
+                        <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="size-3.5" />
+                          <span className="line-clamp-1">
                             {[
                               item.location_city,
                               item.location_state,
                               item.location_country,
-                            ]
-                              .filter(Boolean)
-                              .join(", ") || "Location not specified"}
-                          </p>
+                            ].filter(Boolean).join(", ") || "Location not specified"}
+                          </span>
                         </div>
-                        <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                          {item.category}
-                        </p>
-                      </div>
-                      <div className="mt-5 flex items-center justify-between">
-                        <span className="text-lg font-semibold">
-                          {formatPrice(item.price_per_day)}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          per day
-                        </span>
+                        
+                        <div className="mt-4 flex items-baseline gap-1">
+                          <span className="text-xl font-bold text-primary">
+                            {formatPrice(item.price_per_day)}
+                          </span>
+                          <span className="text-xs text-muted-foreground font-medium uppercase">
+                            / day
+                          </span>
+                        </div>
                       </div>
                     </Link>
                   ))}
