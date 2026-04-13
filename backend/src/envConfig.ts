@@ -13,6 +13,10 @@ const envSchema = z.object({
     PG_DB_NAME: z.string(),
     JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
     JWT_EXPIRES_IN: z.string().default("7d"),
+    FRONTEND_URL: z.string().url().default("http://localhost:3000"),
+    IMAGEKIT_PUBLIC_KEY: z.string(),
+    IMAGEKIT_PRIVATE_KEY: z.string(),
+    IMAGEKIT_URL_ENDPOINT: z.string().url(),
 });
 
 const selectedEnv = {
@@ -25,6 +29,10 @@ const selectedEnv = {
     PG_DB_NAME: process.env.PG_DB_NAME,
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+    FRONTEND_URL: process.env.FRONTEND_URL,
+    IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
+    IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+    IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT,
 };
 
 const env = envSchema.safeParse(selectedEnv);

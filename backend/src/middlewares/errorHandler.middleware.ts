@@ -37,7 +37,7 @@ function mapPostgresError(err: any): ApiError | null {
     }
 }
 
-export const errorHandlerMiddeware = async (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const errorHandlerMiddleware = async (err: Error, req: Request, res: Response, next: NextFunction) => {
     let apiError: ApiError;
 
     if (err instanceof ApiError) {
