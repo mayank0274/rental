@@ -13,6 +13,7 @@ const SlugSchema = z
 export const RentalItemIdSchema = z.string().uuid("Invalid rental item id");
 
 export const CreateRentalItemSchema = z.object({
+    title: z.string().trim().min(1, "Title is required").max(120),
     description: z.string().trim().min(1, "Description is required"),
     slug: SlugSchema,
     price_per_day: z.coerce.number().min(1, "Price per day must be at least 1"),
@@ -28,6 +29,7 @@ export type CreateRentalItemInput = z.infer<typeof CreateRentalItemSchema>;
 
 export const UpdateRentalItemSchema = z
     .object({
+        title: z.string().trim().min(1).max(120).optional(),
         description: z.string().trim().min(1).optional(),
         slug: SlugSchema.optional(),
         price_per_day: z.coerce

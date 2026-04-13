@@ -13,3 +13,11 @@ export interface RentalItemRow {
     created_at: Date;
     updated_at: Date;
 }
+
+export interface RentalItemWithPublisher extends RentalItemRow {
+    publisher: {
+        name: string;
+        email: string;
+        phone: string | null;
+    };
+}

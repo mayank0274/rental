@@ -1,20 +1,77 @@
+import Link from "next/link";
 import { Section } from "@/components/site/section";
 
-const categories = [
-  { name: "Bikes", description: "Commute, cruise, or hit the trail." },
-  { name: "Cars", description: "City trips, weekends, and getaways." },
-  { name: "Tools", description: "DIY projects without buying the gear." },
-  { name: "Cameras", description: "Capture moments with pro setups." },
-  { name: "Electronics", description: "Speakers, monitors, and gadgets." },
-  { name: "Furniture", description: "Stage, host, or upgrade a space." },
-  { name: "Sports", description: "Gear for every season and sport." },
-  { name: "Outdoor", description: "Camping, hiking, and adventure kits." },
-  { name: "Party", description: "Decor, lighting, and event essentials." },
-  { name: "Baby", description: "Travel-friendly baby gear on demand." },
-  { name: "Music", description: "Instruments and studio equipment." },
-  { name: "Costumes", description: "Theme nights, performances, and cosplay." },
-  { name: "Books", description: "Textbooks and specialty collections." },
-  { name: "Other", description: "Anything else you want to rent out." },
+export const categories = [
+  {
+    name: "Bikes",
+    value: "bikes",
+    description: "Commute, cruise, or hit the trail.",
+  },
+  {
+    name: "Cars",
+    value: "cars",
+    description: "City trips, weekends, and getaways.",
+  },
+  {
+    name: "Tools",
+    value: "tools",
+    description: "DIY projects without buying the gear.",
+  },
+  {
+    name: "Cameras",
+    value: "cameras",
+    description: "Capture moments with pro setups.",
+  },
+  {
+    name: "Electronics",
+    value: "electronics",
+    description: "Speakers, monitors, and gadgets.",
+  },
+  {
+    name: "Furniture",
+    value: "furniture",
+    description: "Stage, host, or upgrade a space.",
+  },
+  {
+    name: "Sports",
+    value: "sports",
+    description: "Gear for every season and sport.",
+  },
+  {
+    name: "Outdoor",
+    value: "outdoor",
+    description: "Camping, hiking, and adventure kits.",
+  },
+  {
+    name: "Party",
+    value: "party",
+    description: "Decor, lighting, and event essentials.",
+  },
+  {
+    name: "Baby",
+    value: "baby",
+    description: "Travel-friendly baby gear on demand.",
+  },
+  {
+    name: "Music",
+    value: "music",
+    description: "Instruments and studio equipment.",
+  },
+  {
+    name: "Costumes",
+    value: "costumes",
+    description: "Theme nights, performances, and cosplay.",
+  },
+  {
+    name: "Books",
+    value: "books",
+    description: "Textbooks and specialty collections.",
+  },
+  {
+    name: "Other",
+    value: "other",
+    description: "Anything else you want to rent out.",
+  },
 ];
 
 export function Categories() {
@@ -37,15 +94,18 @@ export function Categories() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
-            <div
+            <Link
               key={category.name}
-              className="rounded-3xl border border-border/60 bg-background p-6"
+              href={`/rentals/${category.value}`}
+              className="group rounded-3xl border border-border/60 bg-background p-6 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
             >
-              <h3 className="text-lg font-semibold">{category.name}</h3>
+              <h3 className="text-lg font-semibold group-hover:text-primary">
+                {category.name}
+              </h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 {category.description}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

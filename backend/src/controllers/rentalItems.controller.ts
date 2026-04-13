@@ -20,6 +20,7 @@ export const createRentalItem = asyncErrorHandler(
             throw ApiError.validationError(parsed.error.flatten().fieldErrors);
 
         const {
+            title,
             description,
             slug,
             price_per_day,
@@ -33,11 +34,12 @@ export const createRentalItem = asyncErrorHandler(
 
         const { rows } = await pool.query<RentalItemRow>(
             `INSERT INTO rental_items
-        (user_id, description, slug, price_per_day, images, category, status, location_city, location_state, location_country)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        (user_id, title, description, slug, price_per_day, images, category, status, location_city, location_state, location_country)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
             [
                 user.id,
+                title,
                 description,
                 slug,
                 price_per_day,
@@ -83,6 +85,8 @@ export const updateRentalItem = asyncErrorHandler(
         const updates: Array<{ key: string; value: unknown }> = [];
         const data = parsed.data;
 
+        if (data.title !== undefined)
+            updates.push({ key: "title", value: data.title });
         if (data.description !== undefined)
             updates.push({ key: "description", value: data.description });
         if (data.slug !== undefined)
@@ -241,5 +245,47 @@ export const listPublicRentalItems = asyncErrorHandler(
                 },
             })
         );
+    }
+);
+
+export const getPublicRentalItemBySlug = asyncErrorHandler(
+    async (req: Request, res: Response) => {
+        const { slug } = req.params;
+
+        if (!slug) throw ApiError.badRequest("Slug is required");
+
+        const { rows } = await pool.query<any>(
+            `SELECT 
+                ri.*, 
+                u.name as publisher_name, 
+                u.email as publisher_email, 
+                u.phone as publisher_phone
+            FROM rental_items ri
+            JOIN users u ON ri.user_id = u.id
+            WHERE ri.slug = $1 
+            LIMIT 1`,
+            [slug]
+        );
+
+        const item = rows[0];
+        if (!item) throw ApiError.notFound("Rental item not found");
+
+        const formattedItem = {
+            ...item,
+            publisher: {
+                name: item.publisher_name,
+                email: item.publisher_email,
+                phone: item.publisher_phone,
+            },
+        };
+
+        // Remove the flat joined columns
+        delete formattedItem.publisher_name;
+        delete formattedItem.publisher_email;
+        delete formattedItem.publisher_phone;
+
+        return res
+            .status(200)
+            .json(new ApiSuccessRes(200, "Rental item details retrieved", formattedItem));
     }
 );

@@ -77,7 +77,7 @@ export function Hero() {
                 Bundle price
               </p>
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-semibold">$58</span>
+                <span className="text-3xl font-semibold">₹58</span>
                 <span className="text-xs text-muted-foreground">/ day</span>
               </div>
               <div className="mt-4 h-2 w-full rounded-full bg-muted">

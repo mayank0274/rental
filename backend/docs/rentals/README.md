@@ -59,6 +59,7 @@ Allowed categories: `bikes`, `cars`, `tools`, `cameras`, `electronics`,
     {
       "id": "...",
       "user_id": "...",
+      "title": "Trek FX 3 Hybrid Bike",
       "description": "...",
       "slug": "trek-fx-3",
       "price_per_day": 25,
@@ -79,6 +80,52 @@ Allowed categories: `bikes`, `cars`, `tools`, `cameras`, `electronics`,
     "totalPages": 7,
     "hasNext": true,
     "hasPrev": true
+  }
+}
+```
+
+---
+
+## GET `/api/rentals/:slug`
+
+Get a single rental item by its slug. Includes publisher contact details.
+
+**Responses**
+
+| Status | Description |
+|---|---|
+| `200` | Item returned |
+| `404` | Item not found |
+
+**Response Details**
+
+```json
+{
+  "success": true,
+  "data": {
+    "statusCode": 200,
+    "message": "Rental item details retrieved",
+    "details": {
+      "id": "...",
+      "user_id": "...",
+      "title": "Trek FX 3 Hybrid Bike",
+      "description": "...",
+      "slug": "trek-fx-3",
+      "price_per_day": 25,
+      "images": ["https://cdn.example.com/bike-1.jpg"],
+      "category": "bikes",
+      "status": "available",
+      "location_city": "Austin",
+      "location_state": "TX",
+      "location_country": "USA",
+      "created_at": "2026-03-25T10:00:00.000Z",
+      "updated_at": "2026-03-25T10:00:00.000Z",
+      "publisher": {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "phone": "1234567890"
+      }
+    }
   }
 }
 ```
@@ -110,6 +157,7 @@ Create a rental item.
 
 | Field | Type | Required | Rules |
 |---|---|---|---|
+| `title` | string | ✅ | Max 120 chars |
 | `description` | string | ✅ | Required |
 | `slug` | string | ✅ | Unique; lowercase letters, numbers, hyphens |
 | `price_per_day` | number | ✅ | Minimum 1 |
@@ -123,6 +171,7 @@ Create a rental item.
 **Example**
 ```json
 {
+  "title": "Trek FX 3 Hybrid Bike",
   "description": "Trek FX 3, great condition.",
   "slug": "trek-fx-3",
   "price_per_day": 25,

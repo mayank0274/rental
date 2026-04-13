@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Category", href: "#categories" },
+  { label: "Rentals", href: "/rentals" },
 ];
 
 export function Navbar({ className }: { className?: string }) {
@@ -39,13 +39,13 @@ export function Navbar({ className }: { className?: string }) {
               </Link>
             ))}
           </div>
-          
+
           <div className="flex items-center gap-3">
             {!isLoading && (
               <>
                 {isAuthenticated ? (
-                  <Link 
-                    href="/profile" 
+                  <Link
+                    href="/profile"
                     className="flex items-center gap-2 text-sm font-medium hover:text-primary transition"
                   >
                     <div className="size-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold uppercase">
