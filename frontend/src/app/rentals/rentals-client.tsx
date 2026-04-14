@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { Section } from "@/components/site/section";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { categories } from "@/components/home/categories";
 import { rentalsApi } from "@/lib/api/rentals-api";
 import { cn } from "@/lib/utils";
-import { MapPin } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 
 const PAGE_SIZE = 12;
 
@@ -31,24 +32,56 @@ export function RentalsClient({
   initialCategory?: string;
   lockCategory?: boolean;
 }) {
-  const [category, setCategory] = useState<string>(initialCategory || "all");
-  const [page, setPage] = useState<number>(1);
-  const [categorySearch, setCategorySearch] = useState("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Consolidate state into a single object
+  const [filters, setFilters] = useState({
+    category: initialCategory || searchParams.get("category") || "all",
+    title: searchParams.get("title") || "",
+    city: searchParams.get("city") || "",
+    page: Number(searchParams.get("page")) || 1,
+    categorySearch: ""
+  });
+
+  // Sync internal state with URL params (handles back/forward navigation and direct link entry)
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      category: searchParams.get("category") || initialCategory || "all",
+      title: searchParams.get("title") || "",
+      city: searchParams.get("city") || "",
+      page: Number(searchParams.get("page")) || 1,
+    }));
+  }, [searchParams, initialCategory]);
 
   const filteredCategories = useMemo(() => {
-    const query = categorySearch.trim().toLowerCase();
+    const query = filters.categorySearch.trim().toLowerCase();
     if (!query) return categoryOptions;
     return categoryOptions.filter((item) =>
       item.name.toLowerCase().includes(query)
     );
-  }, [categorySearch]);
+  }, [filters.categorySearch]);
 
+  // Use URL params as the ground truth for data fetching
+  // This removes the need for separate "applied" states
   const { data, isLoading, isError, isFetching } = useQuery({
-    queryKey: ["rentals", category, page, PAGE_SIZE],
+    queryKey: [
+      "rentals",
+      searchParams.get("category") || initialCategory || "all",
+      searchParams.get("title") || "",
+      searchParams.get("city") || "",
+      searchParams.get("page") || "1",
+      PAGE_SIZE
+    ],
     queryFn: () =>
       rentalsApi.list({
-        category: category === "all" ? undefined : category,
-        page,
+        category: (searchParams.get("category") || initialCategory || "all") === "all" 
+          ? undefined 
+          : (searchParams.get("category") || initialCategory || "all"),
+        title: searchParams.get("title") || undefined,
+        city: searchParams.get("city") || undefined,
+        page: Number(searchParams.get("page")) || 1,
         limit: PAGE_SIZE,
       }),
     placeholderData: keepPreviousData,
@@ -59,13 +92,41 @@ export function RentalsClient({
   const pagination = details?.pagination;
   const total = pagination?.total ?? items.length;
   const totalPages = pagination?.totalPages ?? Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const canPrev = pagination?.hasPrev ?? page > 1;
-  const canNext = pagination?.hasNext ?? page < totalPages;
+  const canPrev = pagination?.hasPrev ?? filters.page > 1;
+  const canNext = pagination?.hasNext ?? filters.page < totalPages;
+
+  const updateUrl = (newParams: Record<string, string | number | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value) params.set(key, String(value));
+      else params.delete(key);
+    });
+    router.replace(`/rentals?${params.toString()}`, { scroll: false });
+  };
 
   const handleCategoryChange = (value: string) => {
     if (lockCategory) return;
-    setCategory(value);
-    setPage(1);
+    updateUrl({ category: value, page: 1 });
+  };
+
+  const handleAdvancedSearch = () => {
+    updateUrl({ 
+      title: filters.title, 
+      city: filters.city, 
+      page: 1 
+    });
+  };
+
+  const handleClearFilters = () => {
+    setFilters(prev => ({
+      ...prev,
+      title: "",
+      city: "",
+      category: "all",
+      categorySearch: "",
+      page: 1
+    }));
+    router.replace("/rentals", { scroll: false });
   };
 
   return (
@@ -88,42 +149,80 @@ export function RentalsClient({
           </div>
 
           {!lockCategory && (
-            <div className="flex flex-col gap-4 rounded-3xl border border-border/60 bg-muted/20 p-5 sm:p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="w-full sm:max-w-xs">
-                  <Input
-                    placeholder="Search categories"
-                    value={categorySearch}
-                    onChange={(event) => setCategorySearch(event.target.value)}
-                    aria-label="Search categories"
-                  />
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {isFetching ? "Updating results..." : `${total} rentals`}
+            <div className="flex flex-col gap-4">
+              <div className="rounded-xl border bg-card p-2 shadow-sm mb-2 max-w-4xl">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+                    <Input
+                      className="w-full border-0 bg-transparent pl-9 text-sm shadow-none focus-visible:ring-0"
+                      placeholder="City or location"
+                      value={filters.city}
+                      onChange={(e) => setFilters(prev => ({ ...prev, city: e.target.value }))}
+                      onKeyDown={(e) => e.key === "Enter" && handleAdvancedSearch()}
+                    />
+                  </div>
+                  <div className="hidden h-8 w-px bg-border sm:block" />
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
+                    <Input
+                      className="w-full border-0 bg-transparent pl-9 text-sm shadow-none focus-visible:ring-0"
+                      placeholder="What are you looking for?"
+                      value={filters.title}
+                      onChange={(e) => setFilters(prev => ({ ...prev, title: e.target.value }))}
+                      onKeyDown={(e) => e.key === "Enter" && handleAdvancedSearch()}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 px-2 sm:px-0">
+                    <Button size="sm" className="w-full sm:w-auto px-6" onClick={handleAdvancedSearch}>
+                      Search
+                    </Button>
+                    {(searchParams.get("title") || searchParams.get("city") || filters.category !== "all" || filters.categorySearch) && (
+                      <Button variant="ghost" size="sm" onClick={handleClearFilters} className="text-muted-foreground">
+                        Clear Filters
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {filteredCategories.length === 0 ? (
-                  <span className="text-sm text-muted-foreground">
-                    No categories match that search.
-                  </span>
-                ) : (
-                  filteredCategories.map((item) => (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => handleCategoryChange(item.value)}
-                      className={cn(
-                        "rounded-full border px-4 py-2 text-xs font-medium transition",
-                        category === item.value
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border/60 bg-background text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {item.name}
-                    </button>
-                  ))
-                )}
+
+              <div className="flex flex-col gap-4 rounded-xl border border-border/60 bg-muted/20 p-5 sm:p-6 mt-2">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="w-full sm:max-w-xs">
+                    <Input
+                      placeholder="Filter categories..."
+                      value={filters.categorySearch}
+                      onChange={(event) => setFilters(prev => ({ ...prev, categorySearch: event.target.value }))}
+                      aria-label="Search categories"
+                    />
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {isFetching ? "Updating results..." : `${total} rentals`}
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {filteredCategories.length === 0 ? (
+                    <span className="text-sm text-muted-foreground">
+                      No categories match that search.
+                    </span>
+                  ) : (
+                    filteredCategories.map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => handleCategoryChange(item.value)}
+                        className={cn(
+                          "rounded-full border px-4 py-2 text-xs font-medium transition",
+                          filters.category === item.value
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border/60 bg-background text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        {item.name}
+                      </button>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -225,13 +324,13 @@ export function RentalsClient({
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background p-4">
           <span className="text-xs text-muted-foreground">
-            Page {page} of {totalPages}
+            Page {filters.page} of {totalPages}
           </span>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              onClick={() => updateUrl({ page: Math.max(1, filters.page - 1) })}
               disabled={!canPrev || isFetching}
             >
               Previous
@@ -239,7 +338,7 @@ export function RentalsClient({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              onClick={() => updateUrl({ page: Math.min(totalPages, filters.page + 1) })}
               disabled={!canNext || isFetching}
             >
               Next

@@ -178,13 +178,23 @@ export const listPublicRentalItems = asyncErrorHandler(
         if (!parsed.success)
             throw ApiError.validationError(parsed.error.flatten().fieldErrors);
 
-        const { category, page, limit } = parsed.data;
+        const { category, title, city, page, limit } = parsed.data;
         const whereClauses: string[] = ["status = 'available'"];
         const filterValues: Array<string> = [];
 
         if (category) {
             filterValues.push(category);
             whereClauses.push(`category = $${filterValues.length}`);
+        }
+
+        if (title) {
+            filterValues.push(`%${title}%`);
+            whereClauses.push(`title ILIKE $${filterValues.length}`);
+        }
+
+        if (city) {
+            filterValues.push(`%${city}%`);
+            whereClauses.push(`location_city ILIKE $${filterValues.length}`);
         }
 
         const baseQuery = `FROM rental_items WHERE ${whereClauses.join(" AND ")}`;

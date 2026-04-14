@@ -24,11 +24,15 @@ optional pagination.
 | Param | Type | Required |
 |---|---|---|
 | `category` | string | ❌ |
+| `title` | string | ❌ |
+| `city` | string | ❌ |
 | `page` | number | ❌ |
 | `limit` | number | ❌ |
 
 Notes:
 `category` may be omitted or set to `all`/empty to return all categories.
+`title` performs a partial, case-insensitive search on the item title.
+`city` performs a partial, case-insensitive search on the location city.
 `limit` must be between 1 and 100 when provided.
 Pagination is applied only when `page` or `limit` is provided.
 Allowed categories: `bikes`, `cars`, `tools`, `cameras`, `electronics`,

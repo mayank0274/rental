@@ -45,11 +45,15 @@ export interface RentalListDetails {
 export const rentalsApi = {
   list: (params?: {
     category?: string;
+    title?: string;
+    city?: string;
     page?: number;
     limit?: number;
   }): Promise<ApiResponse<RentalListDetails>> => {
     const queryParams: Record<string, string | number> = {};
     if (params?.category) queryParams.category = params.category;
+    if (params?.title) queryParams.title = params.title;
+    if (params?.city) queryParams.city = params.city;
     if (params?.page) queryParams.page = params.page;
     if (params?.limit) queryParams.limit = params.limit;
 

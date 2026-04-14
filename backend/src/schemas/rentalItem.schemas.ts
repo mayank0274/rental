@@ -69,6 +69,8 @@ export const PublicListQuerySchema = z.object({
         },
         CategoryEnum.optional()
     ),
+    title: z.string().trim().optional(),
+    city: z.string().trim().optional(),
     page: OptionalPositiveInt,
     limit: OptionalPositiveInt,
 });

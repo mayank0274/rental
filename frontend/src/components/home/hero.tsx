@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +10,18 @@ import { Section } from "@/components/site/section";
 import { Search, MapPin } from "lucide-react";
 
 export function Hero() {
+  const [city, setCity] = useState("");
+  const [title, setTitle] = useState("");
+  const router = useRouter();
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (city.trim()) params.set("city", city.trim());
+    if (title.trim()) params.set("title", title.trim());
+    
+    router.push(`/rentals?${params.toString()}`);
+  };
+
   return (
     <div className="bg-primary pt-14 pb-20 sm:pt-24 sm:pb-28">
       <Section id="home" className="text-center">
@@ -24,7 +40,9 @@ export function Hero() {
                 <Input
                   className="w-full border-0 bg-transparent pl-10 text-base shadow-none focus-visible:ring-0"
                   placeholder="City, Neighborhood or Zip"
-                  readOnly
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
               <div className="hidden h-8 w-px bg-border sm:block" />
@@ -33,11 +51,13 @@ export function Hero() {
                 <Input
                   className="w-full border-0 bg-transparent pl-10 text-base shadow-none focus-visible:ring-0"
                   placeholder="What are you looking for?"
-                  readOnly
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
-              <Button asChild size="lg" className="w-full sm:w-auto px-8">
-                <Link href="/rentals">Search</Link>
+              <Button size="lg" className="w-full sm:w-auto px-8" onClick={handleSearch}>
+                Search
               </Button>
             </div>
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3 border-t border-border/50 pt-4">
