@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.ts";
 import rentalItemsRouter from "./routes/rentalItems.routes.ts";
 import uploadRouter from "./routes/upload.routes.ts";
+import chatRouter from "./routes/chat.routes.ts";
 import cors from "cors"
 
 import { envConfig } from "./envConfig.ts";
@@ -24,6 +25,7 @@ app.use(
 app.use("/api/auth", authRouter);
 app.use("/api/rentals", rentalItemsRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/chat", chatRouter);
 
 // ─── Global error handler (must be last) ──────────────────────────────────────
 app.use(errorHandlerMiddleware);

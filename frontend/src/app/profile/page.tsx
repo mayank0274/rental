@@ -91,19 +91,6 @@ export default function ProfilePage() {
     }
   }, [isLoading, isAuthenticated, router]);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-muted/20">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground animate-pulse">Loading your profile...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) return null;
-
   const uploadMutation = useMutation({
     mutationFn: uploadApi.uploadMultiple,
   });
@@ -184,6 +171,38 @@ export default function ProfilePage() {
     return rentalsDetails.items ?? [];
   }, [rentalsDetails]);
 
+  useEffect(() => {
+    const urls = selectedFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews(urls);
+
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [selectedFiles]);
+
+  useEffect(() => {
+    const urls = editFiles.map((file) => URL.createObjectURL(file));
+    setEditImagePreviews(urls);
+
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [editFiles]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/20">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-muted-foreground animate-pulse">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
@@ -249,23 +268,7 @@ export default function ProfilePage() {
     setEditFiles(files);
   };
 
-  useEffect(() => {
-    const urls = selectedFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviews(urls);
 
-    return () => {
-      urls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [selectedFiles]);
-
-  useEffect(() => {
-    const urls = editFiles.map((file) => URL.createObjectURL(file));
-    setEditImagePreviews(urls);
-
-    return () => {
-      urls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [editFiles]);
 
   const resetForm = () => {
     setFormState({
@@ -459,10 +462,10 @@ export default function ProfilePage() {
   return (
     <Section className="min-h-screen pb-20">
       <div className="flex flex-col gap-10">
-        <div className="flex flex-col gap-6 rounded-3xl border border-border/60 bg-background p-6 shadow-lg sm:p-10">
+        <div className="flex flex-col gap-6 rounded-lg border bg-card p-6 shadow-sm sm:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-              <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-neutral-100 text-3xl font-bold tracking-tighter text-neutral-900 ring-4 ring-background shadow-sm">
+              <div className="flex h-24 w-24 items-center justify-center rounded bg-primary/10 text-3xl font-bold tracking-tighter text-primary ring-2 ring-background shadow-sm">
                 {initials}
               </div>
               <div>
@@ -483,7 +486,7 @@ export default function ProfilePage() {
               variant="outline"
               onClick={() => logout()}
               disabled={isLoggingOut}
-              className="self-start rounded-xl border-border/60"
+              className="self-start rounded shrink-0"
             >
               <LogOut className="mr-2 h-4 w-4" />
               {isLoggingOut ? "Logging out..." : "Log out"}
@@ -501,7 +504,7 @@ export default function ProfilePage() {
 
           <TabsContent value="overview">
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-3xl border border-border/60 bg-background p-6 shadow-sm">
+              <div className="rounded-lg border bg-card p-6 shadow-sm">
                 <h2 className="flex items-center text-lg font-semibold">
                   <User className="mr-2 h-5 w-5 text-primary" />
                   Personal Information
@@ -509,7 +512,7 @@ export default function ProfilePage() {
                 <div className="mt-6 space-y-5">
                   {infoItems.map((item) => (
                     <div key={item.label} className="flex items-start gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground">
+                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-muted/50 text-muted-foreground">
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -523,7 +526,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-border/60 bg-background p-6 shadow-sm">
+              <div className="rounded-lg border bg-card p-6 shadow-sm">
                 <h2 className="flex items-center text-lg font-semibold">
                   <Settings className="mr-2 h-5 w-5 text-primary" />
                   Account Details
@@ -531,7 +534,7 @@ export default function ProfilePage() {
                 <div className="mt-6 space-y-5">
                   {accountItems.map((item) => (
                     <div key={item.label} className="flex items-start gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground">
+                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-muted/50 text-muted-foreground">
                         <item.icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -550,9 +553,9 @@ export default function ProfilePage() {
           </TabsContent>
 
           <TabsContent value="add">
-            <div className="rounded-3xl border border-border/60 bg-background p-6 shadow-sm">
+            <div className="rounded-lg border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                 <div className="flex h-11 w-11 items-center justify-center rounded bg-primary/10 text-primary">
                   <PackagePlus className="h-5 w-5" />
                 </div>
                 <div>
@@ -688,7 +691,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  <div className="flex h-full flex-col gap-4 rounded-3xl border border-dashed border-border/70 bg-muted/20 p-4">
+                  <div className="flex h-full flex-col gap-4 rounded-lg border border-dashed border-border/70 bg-muted/20 p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <Label htmlFor="images">Images</Label>
@@ -715,7 +718,7 @@ export default function ProfilePage() {
                         {imagePreviews.map((src, index) => (
                           <div
                             key={`${src}-${index}`}
-                            className="relative overflow-hidden rounded-2xl border border-border/60 bg-background"
+                            className="relative overflow-hidden rounded-md border bg-card"
                           >
                             <img
                               src={src}
@@ -726,7 +729,7 @@ export default function ProfilePage() {
                         ))}
                       </div>
                     ) : (
-                      <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-border/60 bg-background p-6 text-center text-xs text-muted-foreground">
+                      <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-border bg-card p-6 text-center text-xs text-muted-foreground">
                         Add images to preview them here.
                       </div>
                     )}
@@ -751,9 +754,9 @@ export default function ProfilePage() {
           </TabsContent>
 
           <TabsContent value="published">
-            <div className="rounded-3xl border border-border/60 bg-background p-6 shadow-sm">
+            <div className="rounded-lg border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                 <div className="flex h-11 w-11 items-center justify-center rounded bg-primary/10 text-primary">
                   <Layers3 className="h-5 w-5" />
                 </div>
                 <div>
@@ -770,16 +773,16 @@ export default function ProfilePage() {
                     {Array.from({ length: 4 }).map((_, index) => (
                       <div
                         key={`rental-skeleton-${index}`}
-                        className="h-32 rounded-2xl border border-border/60 bg-muted/40"
+                        className="h-32 rounded-lg border bg-muted/40"
                       />
                     ))}
                   </div>
                 ) : isRentalsError ? (
-                  <div className="rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+                  <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
                     We couldn&apos;t load your listings right now.
                   </div>
                 ) : publishedItems.length === 0 ? (
-                  <div className="rounded-2xl border border-border/60 bg-muted/30 p-4 text-sm text-muted-foreground">
+                  <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
                     You haven&apos;t published any rentals yet.
                   </div>
                 ) : (
@@ -787,9 +790,9 @@ export default function ProfilePage() {
                     {publishedItems.map((item) => (
                       <article
                         key={item.id}
-                        className="flex gap-4 rounded-2xl border border-border/60 bg-background p-4"
+                        className="flex gap-4 rounded-lg border bg-card p-4 shadow-sm"
                       >
-                        <div className="h-24 w-24 overflow-hidden rounded-xl bg-muted">
+                         <div className="h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted">
                           {item.images?.[0] ? (
                             <img
                               src={item.images[0]}
@@ -922,7 +925,7 @@ export default function ProfilePage() {
                                   {editImages.map((image) => (
                                     <div
                                       key={image}
-                                      className="group relative h-20 w-20 overflow-hidden rounded-xl border border-border/60 bg-muted"
+                                      className="group relative h-20 w-20 overflow-hidden rounded-md border border-border bg-muted"
                                     >
                                       <img
                                         src={image}
@@ -945,7 +948,7 @@ export default function ProfilePage() {
                                   {editImagePreviews.map((image, index) => (
                                     <div
                                       key={`${image}-${index}`}
-                                      className="h-20 w-20 overflow-hidden rounded-xl border border-dashed border-border/60 bg-muted/20"
+                                      className="h-20 w-20 overflow-hidden rounded-md border border-dashed border-border bg-muted/20"
                                     >
                                       <img
                                         src={image}
@@ -1037,9 +1040,9 @@ export default function ProfilePage() {
           </TabsContent>
 
           <TabsContent value="chats">
-            <div className="rounded-3xl border border-border/60 bg-background p-6 shadow-sm">
+            <div className="rounded-lg border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                 <div className="flex h-11 w-11 items-center justify-center rounded bg-primary/10 text-primary">
                   <MessageCircle className="h-5 w-5" />
                 </div>
                 <div>
@@ -1050,7 +1053,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
               </div>
-              <div className="mt-6 rounded-2xl border border-dashed border-border/60 bg-muted/20 p-6 text-sm text-muted-foreground">
+              <div className="mt-6 rounded-lg border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground">
                 Start a rental conversation from a listing to see messages in
                 this space.
               </div>

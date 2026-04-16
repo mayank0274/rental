@@ -43,9 +43,14 @@
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
+    "nodemailer": "^7.0.13",
     "pg": "^8.18.0",
+    "socket.io": "^4.8.3",
     "winston": "^3.19.0",
     "zod": "^4.3.6",
     "zod-to-json-schema": "^3.25.1"
+  },
+  "optionalDependencies": {
+    "@types/nodemailer": "^7.0.2"
   }
 }
