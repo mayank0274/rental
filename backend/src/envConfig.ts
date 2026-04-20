@@ -17,11 +17,11 @@ const envSchema = z.object({
     IMAGEKIT_PUBLIC_KEY: z.string(),
     IMAGEKIT_PRIVATE_KEY: z.string(),
     IMAGEKIT_URL_ENDPOINT: z.string().url(),
-    SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.string().transform(Number).optional(),
-    SMTP_USER: z.string().optional(),
-    SMTP_PASS: z.string().optional(),
-    SMTP_FROM: z.string().email().optional(),
+    SMTP_HOST: z.string(),
+    SMTP_PORT: z.string().transform(Number),
+    SMTP_USER: z.string(),
+    SMTP_PASS: z.string(),
+    SMTP_FROM: z.string(),
 });
 
 const selectedEnv = {

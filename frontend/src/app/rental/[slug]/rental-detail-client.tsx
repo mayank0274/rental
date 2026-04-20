@@ -9,6 +9,7 @@ import { Section } from "@/components/site/section";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { ChatSheet } from "@/components/chat/chat-sheet";
 
 const formatPrice = (value: number) =>
   `₹${new Intl.NumberFormat("en-IN", {
@@ -214,14 +215,12 @@ export function RentalDetailClient({
             </div>
 
             <div className="flex flex-col gap-3">
-              <Button
-                size="lg"
-                className="w-full h-12 text-base font-semibold shadow-md active:scale-[0.98] transition-transform"
-                onClick={() => toast.success("Chat coming soon!")}
-              >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Chat with Owner
-              </Button>
+              <ChatSheet 
+                itemId={rental.id}
+                publisherId={rental.user_id}
+                itemTitle={rental.title || rental.description}
+                publisherName={rental.publisher?.name || "Owner"}
+              />
 
               {rental.publisher?.phone && (
                 <Button

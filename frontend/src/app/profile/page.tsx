@@ -39,6 +39,7 @@ import {
   MessageCircle,
   Layers3,
 } from "lucide-react";
+import { ProfileChats } from "@/components/chat/profile-chats";
 
 const slugify = (value: string) =>
   value
@@ -1040,24 +1041,7 @@ export default function ProfilePage() {
           </TabsContent>
 
           <TabsContent value="chats">
-            <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <div className="flex items-center gap-3">
-                 <div className="flex h-11 w-11 items-center justify-center rounded bg-primary/10 text-primary">
-                  <MessageCircle className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold">Chats</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Messaging is coming soon. We&apos;ll surface your rental
-                    conversations here.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 rounded-lg border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground">
-                Start a rental conversation from a listing to see messages in
-                this space.
-              </div>
-            </div>
+            <ProfileChats />
           </TabsContent>
         </Tabs>
       </div>
