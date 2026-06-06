@@ -56,7 +56,7 @@ export function ConversationList({
                                     selectedConv?.publisher_id === conv.publisher_id
                                         ? "bg-muted/80 shadow-inner"
                                         : ""
-                                }`}
+                                } w-full overflow-hidden`}
                             >
                                 <Avatar className="h-9 w-9 border shadow-sm">
                                     <AvatarFallback>

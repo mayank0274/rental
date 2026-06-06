@@ -1,4 +1,4 @@
-import { axiosInstance } from "../axios.ts";
+import { axiosInstance } from "../axios";
 
 export interface ChatMessage {
     sender_id: string;
@@ -15,6 +15,7 @@ export interface Conversation {
     updated_at: string;
     // Joined metadata
     item_title?: string;
+    item_slug?: string;
     other_user_name?: string;
     other_user_email?: string;
     last_message?: ChatMessage | null;

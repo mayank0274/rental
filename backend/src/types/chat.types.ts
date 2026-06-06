@@ -17,5 +17,6 @@ export interface ConversationWithMeta extends ConversationRow {
     other_user_name: string;
     other_user_email: string;
     item_title: string;
+    item_slug: string;
     last_message: ChatMessage | null;
 }

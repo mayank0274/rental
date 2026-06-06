@@ -791,7 +791,7 @@ export default function ProfilePage() {
                     {publishedItems.map((item) => (
                       <article
                         key={item.id}
-                        className="flex gap-4 rounded-lg border bg-card p-4 shadow-sm"
+                        className="flex gap-3 rounded-lg border bg-card p-4 shadow-sm overflow-hidden"
                       >
                          <div className="h-24 w-24 shrink-0 overflow-hidden rounded-md bg-muted">
                           {item.images?.[0] ? (
@@ -804,7 +804,7 @@ export default function ProfilePage() {
                             <div className="h-full w-full bg-gradient-to-br from-muted to-muted/30" />
                           )}
                         </div>
-                        <div className="flex flex-1 flex-col gap-3">
+                        <div className="flex flex-1 flex-col gap-3 min-w-0">
                           {editingId === item.id ? (
                             <form
                               className="grid gap-3"
@@ -981,18 +981,18 @@ export default function ProfilePage() {
                             </form>
                           ) : (
                             <>
-                              <div>
-                                <h3 className="text-base font-semibold">
+                              <div className="min-w-0">
+                                <h3 className="text-sm font-semibold line-clamp-2 leading-snug">
                                   {item.title || item.description}
                                 </h3>
-                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
                                   {item.description}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground mt-0.5">
                                   {item.category} • {item.status}
                                 </p>
                               </div>
-                              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                              <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
                                 <span>₹{item.price_per_day}/day</span>
                                 <div className="flex items-center gap-2">
                                   <Button

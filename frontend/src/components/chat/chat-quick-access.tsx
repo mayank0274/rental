@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { useQuery } from "@tanstack/react-query"
-import { MessageCircle, X } from "lucide-react"
+import { MessageCircle, X, ChevronLeft } from "lucide-react"
+import Link from "next/link"
 
 import { chatApi, Conversation } from "@/lib/api/chat-api"
 import { useChat } from "@/hooks/use-chat"
@@ -72,9 +73,9 @@ export function ChatQuickAccess() {
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={() => setSelectedConv(null)}
-                                className="h-8 text-xs text-muted-foreground hover:text-foreground"
+                                className="h-8 text-xs text-muted-foreground hover:text-foreground mr-6"
                             >
-                                <X className="h-3 w-3 mr-1" />
+                                <ChevronLeft className="h-3 w-3 mr-1" />
                                 Back to list
                             </Button>
                         )}
@@ -85,7 +86,9 @@ export function ChatQuickAccess() {
                     {selectedConv ? (
                         <>
                             <div className="px-4 py-2 border-b bg-muted/30">
-                                <p className="text-xs font-medium text-muted-foreground uppercase">{selectedConv.item_title}</p>
+                                <Link href={`/rental/${selectedConv.item_slug}`} className="text-xs text-primary hover:text-primary/80 uppercase font-medium underline underline-offset-2 block w-fit mb-1">
+                                    {selectedConv.item_title}
+                                </Link>
                                 <h4 className="font-semibold text-sm">{selectedConv.other_user_name}</h4>
                             </div>
                             <div className="flex-1">

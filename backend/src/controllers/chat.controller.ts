@@ -19,6 +19,7 @@ export const getMyConversations = asyncErrorHandler(
                 u.name as other_user_name,
                 u.email as other_user_email,
                 ri.title as item_title,
+                ri.slug as item_slug,
                 (c.messages->>-1)::jsonb as last_message
              FROM conversations c
              JOIN rental_items ri ON c.item_id = ri.id
