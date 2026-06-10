@@ -34,10 +34,11 @@ function setAuthCookie(res: Response, user: SafeUser): void {
     // Parse the expiry string (e.g. "7d", "1h") into milliseconds for the cookie maxAge
     const durationMs = parseDurationMs(envConfig.JWT_EXPIRES_IN);
 
+    const isProd = envConfig.NODE_ENV === "prod";
     res.cookie(COOKIE_NAME, token, {
         httpOnly: true,                          // JS cannot access it
-        secure: envConfig.NODE_ENV === "prod",   // HTTPS only in production
-        sameSite: "strict",
+        secure: isProd,                          // HTTPS only in production
+        sameSite: "none",       // Cross-site cookie support in production
         maxAge: durationMs,
         path: "/",
     });
@@ -163,6 +164,12 @@ export const me = asyncErrorHandler(async (req: Request, res: Response) => {
 
 // ─── Logout ───────────────────────────────────────────────────────────────────
 export const logout = asyncErrorHandler(async (_req: Request, res: Response) => {
-    res.clearCookie(COOKIE_NAME, { path: "/" });
+    const isProd = envConfig.NODE_ENV === "prod";
+    res.clearCookie(COOKIE_NAME, {
+        path: "/",
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+    });
     return res.status(200).json(new ApiSuccessRes(200, "Logged out successfully"));
 });

@@ -21,6 +21,10 @@ app.use(
     })
 );
 
+app.get("/", (req, res) => {
+    res.redirect("https://rental-mu-nine.vercel.app/")
+})
+
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRouter);
 app.use("/api/rentals", rentalItemsRouter);
